@@ -73,6 +73,13 @@ class Play extends Phaser.Scene {
 
     update() {
       this.starfield.tilePositionX -= 4;
+      // check key input for restart / menu
+      if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyR)) {
+        this.scene.restart();
+      }
+      if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
+        this.scene.start("menuScene");
+      }
       if(!this.gameOver) {
         this.p1Rocket.update();             // update p1
          this.ship01.update();               // update spaceship (x3)
@@ -124,6 +131,6 @@ class Play extends Phaser.Scene {
     this.p1Score += ship.points;
     this.scoreLeft.text = this.p1Score; 
     
-    //this.sound.play('sfx_explosion');
+    this.sound.play('sfx_explosion');
   }
 }
