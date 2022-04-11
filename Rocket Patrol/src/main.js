@@ -3,6 +3,7 @@ let game = new Phaser.Game(config);
 let borderUISize = game.config.height / 15;
 let borderPadding = borderUISize / 3;
 let config = {
+  //canvas or auto?
   type: Phaser.AUTO,
   width: 640,
   height: 480,
