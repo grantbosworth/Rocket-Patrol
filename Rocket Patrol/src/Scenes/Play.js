@@ -4,17 +4,26 @@ class Play extends Phaser.Scene {
     }
 
     preload() {
+      //load sounds
+      this.load.audio('sfx_background', './assets/sfx_background.wav');
       // load images/tile sprites
       this.load.image('rocket', './assets/rocket.png');
       this.load.image('spaceship', './assets/spaceship.png');
       this.load.image('starfield', './assets/starfield.png');
       //Create a new ball sprite for testing 
       this.load.image('ball', './assets/ball.png');
+      //game.load.image('ball', './assets/ball.png');
       // load spritesheet
       this.load.spritesheet('explosion', './assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});
     }
-
+    
     create() {
+      //create sounds
+      this.backgound = this.sound.add('sfx_background');
+      this.backgound.play();
+      this.backgound.loop = true;
+      //var middle = new Phaser.Point( game.config.width/2, game.config.height/2);
+
       // place tile sprite
       this.starfield = this.add.tileSprite(0, 0, 640, 480, 'starfield').setOrigin(0, 0);
       
@@ -29,9 +38,25 @@ class Play extends Phaser.Scene {
       
       // add rocket (p1)
       this.p1Rocket = new Rocket(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'rocket').setOrigin(0.5, 0);
-      
+      //var player_two = this.add.sprite(middle.x - 50, middle.y, 'image1', undefined, this.pieces);
       //add the ball (X1)
-      this.p1ball = new Ball(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'ball').setOrigin(0.55, 0);
+      this.p1ball = new Ball_script(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'ball').setOrigin(0.5,0);
+      this.p1ball.scaleX = 0.1;
+      this.p1ball.scaleY = 0.1;
+      this.p1ball.setOrigin(0.5, 0.5);
+      ship = this.physics.add.image(200, 150, 'ball').setVelocity(SPEED, 0);
+      ship.setScale(0.1);
+      //game.physics.enable(p1ball, Phaser.Physics.ARCADE);
+      //enableBody(reset, x, y, enableGameObject, showGameObject)
+      //var p2ball = game.add.sprite(0, 0, 'ball');
+      //game.physics.startSystem(Phaser.Physics.ARCADE);
+      //game.physics.arcade.enable(this.p1ball) 
+      //game.world.centerX, game.world.centerY: Play.js:39 Uncaught TypeError: Cannot read properties of undefined (reading 'centerX')
+      //scene.add.existing(p1ball);
+      //this is grabbing all of it and not just the image but every time i try and do game.add.sprite() it doesnt work
+      //this.p1ball.anchor.setTo(0.5, 0.5);
+      //game.add.sprite vs new Sprite()?
+      //this.p1ball.setPosition(game.config.width/2, game.config.height/2);
       // add spaceships (x3)
       this.ship01 = new Spaceship(this, game.config.width + borderUISize*6, borderUISize*4, 'spaceship', 0, 30).setOrigin(0, 0);
       this.ship02 = new Spaceship(this, game.config.width + borderUISize*3, borderUISize*5 + borderPadding*2, 'spaceship', 0, 20).setOrigin(0,0);
@@ -76,12 +101,15 @@ class Play extends Phaser.Scene {
   }
 
     update() {
+      
       this.starfield.tilePositionX -= 4;
       // check key input for restart / menu
       if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyR)) {
+        this.playSong.stop();
         this.scene.restart();
       }
       if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
+        this.playSong.stop();
         this.scene.start("menuScene");
       }
       if(!this.gameOver) {
@@ -109,18 +137,32 @@ class Play extends Phaser.Scene {
           //this.ship01.reset();
           this.shipExplode(this.ship01);
       }
+      //  only move when you click
+      // if (game.input.mousePointer.isDown){
+      //      //  400 is the speed it will move towards the mouse
+            //game.physics.arcade.moveToPointer(p1ball, 400);
+
+      //      //  if it's overlapping the mouse, don't move any more
+           // if (Phaser.Rectangle.contains(p1ball.body, game.input.x, game.input.y))
+           // {
+            // p1ball.body.velocity.setTo(0, 0);
+           // }
+        //}
+        //else{
+        // p1ball.body.velocity.setTo(0, 0);
+        //}
     }
 
-    checkCollision(rocket, ship) {
-      // simple AABB checking
-      if (rocket.x < ship.x + ship.width && 
-          rocket.x + rocket.width > ship.x && 
-          rocket.y < ship.y + ship.height &&
-          rocket.height + rocket.y > ship. y) {
-              return true;
-      } else {
-          return false;
-      }
+      checkCollision(rocket, ship) {
+        // simple AABB checking
+        if (rocket.x < ship.x + ship.width && 
+            rocket.x + rocket.width > ship.x && 
+            rocket.y < ship.y + ship.height &&
+            rocket.height + rocket.y > ship. y) {
+                return true;
+        } else {
+            return false;
+        }
   }
 
   shipExplode(ship) {
