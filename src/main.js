@@ -1,4 +1,11 @@
 let config = {
+  //Grant Bosworth
+  //4/18/22
+  //15-20 hours
+  //i have simultanious players 30pts
+  //a whole new asthetic 60 pts
+  //the rocket can move with arrow keys while fired 5pts
+  //Add your own (copyright-free) background music to the Play scene (5)
   //canvas or auto?
   //type: Phaser.CANVAS,
   type: Phaser.WEBGL,

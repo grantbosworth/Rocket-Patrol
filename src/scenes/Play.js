@@ -5,6 +5,7 @@ class Play extends Phaser.Scene {
 
     preload() {
       //background sound provided by Harvey Carman
+      //sprites i used to create the background: provided by elisharamos.art
       //load sounds
       //this.load.audio('sfx_background', './assets/sfx_background.wav');
       this.load.audio('sfx_westernExplosion', './assets/westernExplosion.wav');
@@ -158,11 +159,11 @@ class Play extends Phaser.Scene {
       this.starfield.tilePositionX -= 4;
       // check key input for restart / menu
       if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyR)) {
-        this.playSong.stop("sfx_background");
+        //this.playSong.stop("sfx_background");
         this.scene.restart();
       }
       if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
-        this.playSong.stop("sfx_background");
+        //this.playSong.stop("sfx_background");
         this.scene.start("menuScene");
       }
       if(!this.gameOver) {
