@@ -11,10 +11,14 @@ class Play extends Phaser.Scene {
       this.load.image('spaceship', './assets/spaceship.png');
       this.load.image('starfield', './assets/starfield.png');
       //Create a new ball sprite for testing 
-      this.load.image('ball', './assets/ball.png');
+      this.load.image('ball', './assets/ball2.png');
       //game.load.image('ball', './assets/ball.png');
       // load spritesheet
       this.load.spritesheet('explosion', './assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});
+      this.load.spritesheet('horse', './assets/horse.png', {frameWidth: 160, frameHeight: 32, startFrame: 0, endFrame: 40});
+      this.load.spritesheet('rider', './assets/rider.png', {frameWidth: 160, frameHeight: 32, startFrame: 0, endFrame: 40});
+
+    
     }
     
     create() {
@@ -41,11 +45,13 @@ class Play extends Phaser.Scene {
       //var player_two = this.add.sprite(middle.x - 50, middle.y, 'image1', undefined, this.pieces);
       //add the ball (X1)
       this.p1ball = new Ball_script(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'ball').setOrigin(0.5,0);
-      this.p1ball.scaleX = 0.1;
-      this.p1ball.scaleY = 0.1;
+      //this.p1ball.scaleX = 0.1;
+      //this.p1ball.scaleY = 0.1;
       this.p1ball.setOrigin(0.5, 0.5);
       ship = this.physics.add.image(200, 150, 'ball').setVelocity(SPEED, 0);
-      ship.setScale(0.1);
+      console.log(ship.height);
+      //ship.setScale(0.1);
+      console.log(ship.height);
       //game.physics.enable(p1ball, Phaser.Physics.ARCADE);
       //enableBody(reset, x, y, enableGameObject, showGameObject)
       //var p2ball = game.add.sprite(0, 0, 'ball');
@@ -69,8 +75,12 @@ class Play extends Phaser.Scene {
       keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
       // animation config
       this.anims.create({
-          key: 'explode',
+          key: 'explode', 
           frames: this.anims.generateFrameNumbers('explosion', { start: 0, end: 9, first: 0}),
+          //key: 'horse', 
+          //frames: this.anims.generateFrameNumbers('horse', { start: 0, end: 40, first: 0}),
+          //key: 'rider',
+          //frames: this.anims.generateFrameNumbers('rider', { start: 0, end: 40, first: 0}),
           frameRate: 30
       });
       // initialize score
@@ -101,7 +111,11 @@ class Play extends Phaser.Scene {
   }
 
     update() {
-      
+      //update ship
+      pointerMove(this.input.activePointer);
+      velocityFromRotation(ship.rotation, SPEED, ship.body.velocity);
+      ship.body.debugBodyColor = (ship.body.angularVelocity === 0) ? 0xff0000 : 0xffff00;
+
       this.starfield.tilePositionX -= 4;
       // check key input for restart / menu
       if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyR)) {
@@ -122,6 +136,21 @@ class Play extends Phaser.Scene {
         this.p1ball.update();
     }
       // check collisions
+      if(this.checkCollision(ship, this.ship03)) {
+        //this.ship03.reset();
+        ship.setPosition(game.config.width/2, game.config.height - borderUISize - borderPadding);
+        this.shipExplode(this.ship03);
+      }
+      if(this.checkCollision(ship, this.ship02)) {
+        //this.ship03.reset();
+        ship.setPosition(game.config.width/2, game.config.height - borderUISize - borderPadding);
+        this.shipExplode(this.ship02);
+      }
+      if(this.checkCollision(ship, this.ship01)) {
+        //this.ship03.reset();
+        ship.setPosition(game.config.width/2, game.config.height - borderUISize - borderPadding);
+        this.shipExplode(this.ship01);
+      }
       if(this.checkCollision(this.p1Rocket, this.ship03)) {
         this.p1Rocket.reset();
         //this.ship03.reset();
@@ -153,7 +182,7 @@ class Play extends Phaser.Scene {
         //}
     }
 
-      checkCollision(rocket, ship) {
+  checkCollision(rocket, ship) {
         // simple AABB checking
         if (rocket.x < ship.x + ship.width && 
             rocket.x + rocket.width > ship.x && 
@@ -169,7 +198,7 @@ class Play extends Phaser.Scene {
     // temporarily hide ship
     ship.alpha = 0;                         
     // create explosion sprite at ship's position
-    let boom = this.add.sprite(ship.x, ship.y, 'explosion').setOrigin(0, 0);
+    let boom = this.add.sprite(ship.x, ship.y, 'explode').setOrigin(0, 0);
     boom.anims.play('explode');             // play explode animation
     boom.on('animationcomplete', () => {    // callback after anim completes
         ship.reset();                         // reset ship position
@@ -181,5 +210,19 @@ class Play extends Phaser.Scene {
     this.scoreLeft.text = this.p1Score; 
     
     this.sound.play('sfx_explosion');
+  }
+}
+
+function pointerMove (pointer) {
+  // if (!pointer.manager.isOver) return;
+  
+  var angleToPointer = Phaser.Math.Angle.Between(ship.x, ship.y, pointer.worldX, pointer.worldY);
+  var angleDelta = Phaser.Math.Angle.Wrap(angleToPointer - ship.rotation);
+    
+  if (Phaser.Math.Within(angleDelta, 0, TOLERANCE)) {
+    ship.rotation = angleToPointer;
+    ship.setAngularVelocity(0);
+  } else {
+    ship.setAngularVelocity(Math.sign(angleDelta) * ROTATION_SPEED_DEGREES);
   }
 }
