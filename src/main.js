@@ -6,6 +6,7 @@ let config = {
   //a whole new asthetic 60 pts
   //the rocket can move with arrow keys while fired 5pts
   //Add your own (copyright-free) background music to the Play scene (5)
+  //credits are in play file where loaded
   //canvas or auto?
   //type: Phaser.CANVAS,
   type: Phaser.WEBGL,
